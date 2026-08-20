@@ -1,0 +1,30 @@
+import nltk
+from nltk.corpus import wordnet
+from nltk.wsd import lesk
+
+# Download required WordNet resources
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+# Given sentence
+sentence = "I went to the bank to deposit my money"
+
+# Target word
+word = "bank"
+
+# Tokenize the sentence
+tokens = sentence.split()
+
+# Apply Lesk algorithm
+sense = lesk(tokens, word)
+
+# Display the result
+print("Sentence:", sentence)
+print("Target Word:", word)
+
+if sense:
+    print("Selected Sense:", sense.name())
+    print("Definition:", sense.definition())
+    print("Example:", sense.examples())
+else:
+    print("No sense found.")
