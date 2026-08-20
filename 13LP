@@ -1,0 +1,30 @@
+import nltk
+from nltk import CFG
+from nltk.parse import ChartParser
+
+# Define the Context-Free Grammar
+grammar = CFG.fromstring("""
+    S -> NP VP
+    NP -> Det N
+    NP -> Det Adj N
+    VP -> V NP
+    VP -> V
+    Det -> 'the' | 'a'
+    Adj -> 'small' | 'big'
+    N -> 'cat' | 'dog' | 'boy'
+    V -> 'sees' | 'likes'
+""")
+
+# Create a parser
+parser = ChartParser(grammar)
+
+# Given sentence
+sentence = "the boy sees a dog"
+
+# Tokenize the sentence
+tokens = sentence.split()
+
+# Generate and display parse trees
+for tree in parser.parse(tokens):
+    print(tree)
+    tree.pretty_print()
