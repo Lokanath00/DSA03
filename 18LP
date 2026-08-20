@@ -1,0 +1,92 @@
+import re
+
+# Simple FOPC parser
+def parse_fopc(expression):
+    expression = expression.strip()
+
+    # Handle parentheses
+    if expression.startswith("(") and expression.endswith(")"):
+        expression = expression[1:-1].strip()
+
+    # Universal quantifier
+    match = re.match(r"FORALL\s+([a-zA-Z])\s+(.+)", expression)
+    if match:
+        variable = match.group(1)
+        statement = match.group(2)
+        return {
+            "type": "Universal Quantifier",
+            "variable": variable,
+            "statement": parse_fopc(statement)
+        }
+
+    # Existential quantifier
+    match = re.match(r"EXISTS\s+([a-zA-Z])\s+(.+)", expression)
+    if match:
+        variable = match.group(1)
+        statement = match.group(2)
+        return {
+            "type": "Existential Quantifier",
+            "variable": variable,
+            "statement": parse_fopc(statement)
+        }
+
+    # NOT operator
+    if expression.startswith("NOT "):
+        return {
+            "type": "NOT",
+            "operand": parse_fopc(expression[4:])
+        }
+
+    # AND operator
+    if " AND " in expression:
+        left, right = expression.split(" AND ", 1)
+        return {
+            "type": "AND",
+            "left": parse_fopc(left),
+            "right": parse_fopc(right)
+        }
+
+    # OR operator
+    if " OR " in expression:
+        left, right = expression.split(" OR ", 1)
+        return {
+            "type": "OR",
+            "left": parse_fopc(left),
+            "right": parse_fopc(right)
+        }
+
+    # Predicate
+    match = re.match(r"([A-Za-z][A-Za-z0-9_]*)\((.*?)\)", expression)
+
+    if match:
+        predicate = match.group(1)
+        arguments = [
+            arg.strip() for arg in match.group(2).split(",")
+        ]
+
+        return {
+            "type": "Predicate",
+            "name": predicate,
+            "arguments": arguments
+        }
+
+    # Invalid expression
+    return {
+        "type": "Invalid",
+        "expression": expression
+    }
+
+
+# Test expressions
+expressions = [
+    "P(x)",
+    "P(x) AND Q(x)",
+    "P(x) OR Q(x)",
+    "NOT P(x)",
+    "FORALL x P(x)",
+    "EXISTS x P(x)"
+]
+
+for expression in expressions:
+    print("\nExpression:", expression)
+    print("Parsed Result:", parse_fopc(expression))
