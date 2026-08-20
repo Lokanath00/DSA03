@@ -1,0 +1,24 @@
+import nltk
+from nltk.corpus import wordnet as wn
+
+# Download WordNet
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+
+# Word to explore
+word = "bank"
+
+# Retrieve synsets
+synsets = wn.synsets(word)
+
+print("Word:", word)
+print("Number of Synsets:", len(synsets))
+
+# Display information about each synset
+for syn in synsets:
+    print("\nSynset:", syn.name())
+    print("Definition:", syn.definition())
+    print("Examples:", syn.examples())
+
+    # Display lemma names (synonyms)
+    print("Synonyms:", syn.lemma_names())
