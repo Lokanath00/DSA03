@@ -1,0 +1,53 @@
+import nltk
+from nltk import CFG
+from nltk.parse import ChartParser
+
+# Define CFG with subject-verb agreement
+grammar = CFG.fromstring("""
+    S -> NP_S VP_S
+    S -> NP_P VP_P
+
+    NP_S -> Det N_S
+    NP_P -> Det N_P
+
+    VP_S -> V_S
+    VP_P -> V_P
+
+    Det -> 'the' | 'a'
+
+    N_S -> 'boy' | 'girl' | 'cat'
+    N_P -> 'boys' | 'girls' | 'cats'
+
+    V_S -> 'plays' | 'runs' | 'eats'
+    V_P -> 'play' | 'run' | 'eat'
+""")
+
+# Create parser
+parser = ChartParser(grammar)
+
+# Function to check agreement
+def check_agreement(sentence):
+    tokens = sentence.lower().split()
+
+    trees = list(parser.parse(tokens))
+
+    if trees:
+        print("Sentence:", sentence)
+        print("Agreement: CORRECT")
+        print("Parse Tree:")
+        trees[0].pretty_print()
+    else:
+        print("Sentence:", sentence)
+        print("Agreement: INCORRECT")
+
+
+# Test sentences
+sentences = [
+    "the boy plays",
+    "the boys play",
+    "the boy play",
+    "the boys plays"
+]
+
+for sentence in sentences:
+    check_agreement(sentence)
