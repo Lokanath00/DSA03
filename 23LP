@@ -1,0 +1,51 @@
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+nltk.download('punkt')
+
+# Input text
+text = """
+Artificial intelligence is changing modern technology.
+AI systems can analyze large amounts of data quickly.
+These systems are widely used in healthcare and education.
+Education platforms use AI to provide personalized learning.
+Personalized learning helps students understand difficult topics.
+"""
+
+# Split text into sentences
+sentences = nltk.sent_tokenize(text)
+
+# Create TF-IDF representation
+vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = vectorizer.fit_transform(sentences)
+
+# Calculate similarity between consecutive sentences
+similarities = []
+
+for i in range(len(sentences) - 1):
+    similarity = cosine_similarity(
+        tfidf_matrix[i],
+        tfidf_matrix[i + 1]
+    )[0][0]
+
+    similarities.append(similarity)
+
+# Calculate overall coherence score
+coherence_score = sum(similarities) / len(similarities)
+
+print("TEXT COHERENCE EVALUATION")
+print("-" * 30)
+
+for i, score in enumerate(similarities):
+    print(f"Sentence {i+1} -> Sentence {i+2}: {score:.3f}")
+
+print("\nOverall Coherence Score:", round(coherence_score, 3))
+
+# Interpret the score
+if coherence_score >= 0.50:
+    print("Evaluation: Highly Coherent")
+elif coherence_score >= 0.25:
+    print("Evaluation: Moderately Coherent")
+else:
+    print("Evaluation: Low Coherence")
