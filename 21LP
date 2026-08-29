@@ -1,0 +1,47 @@
+import nltk
+from nltk import word_tokenize, pos_tag
+from nltk.chunk import RegexpParser
+
+# Download required NLTK resources
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+# Input sentence
+sentence = "The intelligent student reads a book about artificial intelligence."
+
+# Tokenization and POS tagging
+tokens = word_tokenize(sentence)
+tagged_words = pos_tag(tokens)
+
+# Grammar for extracting noun phrases
+grammar = r"""
+    NP: {<DT>?<JJ.*>*<NN.*>+}
+"""
+
+# Create parser
+parser = RegexpParser(grammar)
+
+# Parse the sentence
+tree = parser.parse(tagged_words)
+
+print("Sentence:", sentence)
+print("\nNoun Phrases and Their Meanings:")
+
+# Extract noun phrases
+for subtree in tree.subtrees(filter=lambda t: t.label() == 'NP'):
+    phrase = " ".join(word for word, tag in subtree.leaves())
+
+    # Simple semantic interpretation
+    words = phrase.lower().split()
+
+    if "student" in words:
+        meaning = "A person who studies or learns."
+    elif "book" in words:
+        meaning = "A written or printed work containing information."
+    elif "intelligence" in words:
+        meaning = "The ability to learn, understand, and apply knowledge."
+    else:
+        meaning = "An entity, person, object, or concept described by the noun phrase."
+
+    print(f"NP: {phrase}")
+    print(f"Meaning: {meaning}\n")
