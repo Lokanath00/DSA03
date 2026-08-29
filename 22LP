@@ -1,0 +1,67 @@
+import nltk
+from nltk import word_tokenize, pos_tag
+
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+# Input text
+text = "John went to the library. He borrowed a book. The book was interesting, so he read it."
+
+# Tokenization and POS tagging
+sentences = nltk.sent_tokenize(text)
+
+# Pronouns to resolve
+pronouns = {
+    "he": "male",
+    "him": "male",
+    "his": "male",
+    "she": "female",
+    "her": "female",
+    "hers": "female",
+    "it": "neutral",
+    "they": "plural",
+    "them": "plural",
+    "their": "plural"
+}
+
+# Store previously mentioned nouns
+previous_nouns = []
+
+print("Reference Resolution:\n")
+
+for sentence in sentences:
+    words = word_tokenize(sentence)
+    tagged = pos_tag(words)
+
+    for i, (word, tag) in enumerate(tagged):
+
+        # Check whether the word is a pronoun
+        if word.lower() in pronouns:
+
+            # Find the most recent possible noun
+            reference = None
+
+            for noun, noun_tag in reversed(previous_nouns):
+                # Simple compatibility rules
+                if word.lower() in ["he", "him", "his"]:
+                    reference = noun
+                    break
+
+                elif word.lower() in ["she", "her", "hers"]:
+                    reference = noun
+                    break
+
+                elif word.lower() == "it":
+                    reference = noun
+                    break
+
+                elif word.lower() in ["they", "them", "their"]:
+                    reference = noun
+                    break
+
+            if reference:
+                print(f"'{word}' -> refers to '{reference}'")
+
+        # Store nouns for future reference
+        if tag.startswith("NN") or tag.startswith("NNP"):
+            previous_nouns.append((word, tag))
